@@ -1,20 +1,16 @@
-/* Setup and chat screens are driven by signed Windows connection requests. */
+/* Android passively waits for signed Windows connection requests.
+ * Connection approval and secure pairing are handled by discovery.js/pairing.js.
+ * Do not show a reconnect modal or initiate connections from Android UI.
+ */
 (() => {
  'use strict';
- const $=id=>document.getElementById(id);
- let online=false;
- const trusted=()=>window.FileportIdentity?.readTrusted()||[];
- function render(){
-  const first=!trusted().length;
-  $('androidFirstSetup').classList.toggle('hidden',!first);
-  $('androidReconnect').classList.toggle('hidden',first||online);
- }
+ const setup=document.getElementById('androidFirstSetup');
+ const hasTrustedDevices=()=>Boolean(window.FileportIdentity?.readTrusted()?.length);
+ const render=()=>{if(setup)setup.classList.toggle('hidden',hasTrustedDevices());};
  window.addEventListener('fileport-trusted-updated',render);
- window.addEventListener('fileport-peer-connected',()=>{online=true;render();document.querySelector('[data-switch="flow"]')?.click();});
- window.addEventListener('fileport-peer-disconnected',()=>{online=false;render();});
- window.addEventListener('fileport-connection-error',()=>{online=false;render();});
- $('androidReconnectBtn').addEventListener('click',()=>{
-   $('reconnectNearbyList').textContent='Open Fileport on your PC and choose Connect. The request will appear here.';
+ window.addEventListener('fileport-peer-connected',()=>{
+  render();
+  document.querySelector('[data-switch="flow"]')?.click();
  });
  render();
 })();
