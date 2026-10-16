@@ -43,12 +43,7 @@
 </section>
 <section aria-label="Fileport chat and transfers" class="flow-panel" data-tab="flow" id="flowPanel">
 <div class="flow-header"><div class="flow-avatar">F</div><div><span class="step">FILEPORT</span><h2>Connection &amp; chat</h2><p id="flowDeviceStatus">Chat starts when your devices connect.</p></div><span class="flow-live" id="flowLive">● Offline</span></div>
-<section aria-labelledby="androidReconnectTitle" aria-modal="false" class="flow-reconnect hidden" id="androidReconnect" role="dialog">
-<div class="flow-reconnect-card"><span aria-hidden="true" class="flow-reconnect-icon">↻</span><h2 id="androidReconnectTitle">Connection lost</h2><p>Open Fileport on your PC, then press Connect. The connection request will appear on this phone.</p>
-<button class="button button-primary" id="androidReconnectBtn" type="button">Reconnect</button>
-<p class="reconnect-search-status" id="reconnectNearbyList" role="status"></p><div class="manual-ip-group"><label for="reconnectManualIp">Local IP (fallback)</label><div class="manual-ip-row"><input id="reconnectManualIp" type="text" inputmode="decimal" placeholder="192.168.1.10" autocomplete="off"/><button class="button button-outline" id="reconnectManualConnect" type="button">Connect IP</button></div></div>
-</div>
-</section>
+
 <div aria-live="polite" class="flow-conversation" id="flowMessages"><div class="flow-empty">Chat starts when your computer connects.</div></div>
 <div class="flow-compose"><button aria-label="Attach file" class="flow-add-file" id="flowAddFile" title="Attach file" type="button">+</button><input aria-label="Message" autocomplete="off" id="flowText" maxlength="2000" placeholder="Type a message..."/><button class="button button-primary" disabled="" id="flowSendText" type="button">Send ↗</button></div>
 </section><section class="flow-panel history-screen" data-tab="history"><h2>Transfer history</h2><div class="flow-history"><h3>Recent connections and transfers</h3><div class="flow-recent" id="flowRecent"></div></div><div class="flow-disclaimer">History is stored locally. Transferred files are not included in history.</div><button class="button button-outline flow-clear-history" id="flowClearHistory" type="button">Clear history</button></section>
