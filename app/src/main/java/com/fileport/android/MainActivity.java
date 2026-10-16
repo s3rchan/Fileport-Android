@@ -175,6 +175,7 @@ public class MainActivity extends Activity {
  private static final long MAX_RECEIVE_BYTES=1024L*1024*1024;
  private static final int MAX_CHUNK_BYTES=65536;
  private final Bridge bridge=new Bridge();
+ private GithubUpdater githubUpdater;
  @Override public void onCreate(Bundle b) {
   super.onCreate(b);
   web = new WebView(this);
@@ -232,6 +233,7 @@ public class MainActivity extends Activity {
     catch(Exception e){pending.onReceiveValue(null);pending=null;return false;}
    }
   });
+  githubUpdater=new GithubUpdater(this,web);
   web.addJavascriptInterface(bridge,"FileportNative");
   web.loadUrl("https://appassets.androidplatform.net/assets/index.html");
   activeActivity=this;startLanPresence();requestDiscoveryPermissions();
@@ -424,6 +426,9 @@ public class MainActivity extends Activity {
  }
  class Bridge {
   @JavascriptInterface public void selectUpdateApk(){selectLocalUpdate();}
+  @JavascriptInterface public void checkGithubUpdate(){if(githubUpdater!=null)githubUpdater.check();}
+  @JavascriptInterface public void downloadGithubUpdate(){if(githubUpdater!=null)githubUpdater.download();}
+  @JavascriptInterface public void installGithubUpdate(){if(githubUpdater!=null)githubUpdater.install();}
   @JavascriptInterface public String getDeviceName(){
    String name=null;
    try{name=Settings.Global.getString(getContentResolver(),"device_name");}catch(Exception ignored){}
