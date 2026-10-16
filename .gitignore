@@ -1,0 +1,14 @@
+# Android / Gradle local build outputs
+.gradle/
+**/build/
+local.properties
+*.iml
+.idea/
+
+# Never commit Android signing keys or private credentials
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+*.key
