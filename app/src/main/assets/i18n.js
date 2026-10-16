@@ -10,6 +10,7 @@
   "Offline update":"Çevrimdışı güncelleme",
   "Select update APK":"Güncelleme APK'sını seç"
  });
+ dictionary["Waiting for your computer to connect."]="Bilgisayarınızdan bağlantı isteği bekleniyor.";
  const reverse=Object.fromEntries(Object.entries(dictionary).map(([english,turkish])=>[turkish,english]));
  const cache=new WeakMap();
  const savedLanguage=localStorage.getItem('fileport-language');
