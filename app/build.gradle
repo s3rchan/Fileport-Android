@@ -2,7 +2,7 @@ plugins { id 'com.android.application' }
 android {
  namespace 'com.fileport.android'
  compileSdk 35
- defaultConfig { applicationId 'com.yakin.app'; minSdk 29; targetSdk 35; versionCode 29; versionName '2.9.0' }
+ defaultConfig { applicationId 'com.yakin.app'; minSdk 29; targetSdk 35; versionCode 30; versionName '2.9.1' }
  signingConfigs {
   release {
    def keystorePath = System.getenv('FILEPORT_KEYSTORE_PATH')
