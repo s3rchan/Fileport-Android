@@ -2,6 +2,26 @@ plugins { id 'com.android.application' }
 android {
  namespace 'com.fileport.android'
  compileSdk 35
- defaultConfig { applicationId 'com.yakin.app'; minSdk 29; targetSdk 35; versionCode 28; versionName '2.8.0' }
+ defaultConfig { applicationId 'com.yakin.app'; minSdk 29; targetSdk 35; versionCode 29; versionName '2.9.0' }
+ signingConfigs {
+  release {
+   def keystorePath = System.getenv('FILEPORT_KEYSTORE_PATH')
+   if (keystorePath) {
+    storeFile file(keystorePath)
+    storePassword System.getenv('FILEPORT_KEYSTORE_PASSWORD')
+    keyAlias System.getenv('FILEPORT_KEY_ALIAS')
+    keyPassword System.getenv('FILEPORT_KEY_PASSWORD')
+   }
+  }
+ }
+ buildTypes {
+  release {
+   signingConfig signingConfigs.release
+   minifyEnabled false
+  }
+ }
 }
-dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
+dependencies {
+ implementation 'androidx.webkit:webkit:1.12.1'
+ implementation 'androidx.core:core:1.15.0'
+}
