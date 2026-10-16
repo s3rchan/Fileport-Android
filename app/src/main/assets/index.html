@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="#f5f7fb" name="theme-color"/>
+<meta content="default-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'" http-equiv="Content-Security-Policy"/>
+<title>Fileport — Local File Transfer</title>
+<link href="styles.css" rel="stylesheet"/>
+<style>
+ .connection-internals { position:absolute!important; width:1px!important; height:1px!important; overflow:hidden!important; clip-path:inset(50%)!important; }
+ .language-picker,.nav-language-section {display:flex;align-items:center;gap:8px;font-size:12px;}
+ .language-picker select,.nav-language-section select {border:1px solid #6d86af;border-radius:10px;padding:7px 10px;background:transparent;color:inherit;font:inherit;min-width:94px}
+ .language-picker select option,.nav-language-section select option{color:#172c50;background:#fff}
+ .nav-language-section {padding:12px 16px;justify-content:space-between}
+ .flow-setup-logo {object-fit:contain;max-width:min(240px,70vw);max-height:80px;filter:none!important;mix-blend-mode:normal!important;}
+ .side-brand img,.desktop-top-brand img,.brand-wordmark {filter:none!important;mix-blend-mode:normal!important;object-fit:contain}
+ </style></head>
+<body>
+<main class="shell">
+<header class="topbar"><div class="mobile-brand"><img alt="Fileport" class="brand-wordmark" src="fileport-wordmark-dark.png"/></div><button aria-expanded="false" aria-haspopup="true" aria-label="More options" class="nav-toggle" id="navToggle" type="button">⋮</button></header><div class="menu-backdrop" hidden="" id="menuBackdrop"></div><nav aria-label="More options" class="mobile-nav" id="mobileNav"><button class="mobile-nav-item" data-switch="flow" type="button">Fileport</button><button class="mobile-nav-item" data-switch="connect" type="button">Devices</button><button class="mobile-nav-item" data-switch="history" type="button">History</button><button class="mobile-nav-item" data-switch="about" type="button">About</button><div class="nav-theme-section"><div class="nav-theme-label">Appearance</div><div aria-label="Theme" class="nav-theme-options" role="group"><button data-theme-choice="system" type="button">System</button><button data-theme-choice="light" type="button">Light</button><button data-theme-choice="dark" type="button">Dark</button></div></div><div class="nav-language-section"><label for="languageSelect">Language / Dil</label><select aria-label="Language" id="languageSelect"><option value="en">English</option><option value="tr">Türkçe</option></select></div><div class="nav-update-section"><div>Offline update</div><button type="button" id="selectUpdateApk">Select update APK</button><p id="apkUpdateStatus" role="status"></p></div></nav>
+<section aria-label="Device connection" class="workspace" data-tab="connect"><section class="native-pair"><h2>Paired devices</h2><p>Manage saved trusted devices here. Removing the last device returns to setup.</p><section class="trusted-devices"><h3>Trusted devices</h3><div id="trustedDeviceList"></div></section>
+<div class="device-name-editor"><label for="flowDeviceName">This device</label>
+<input id="flowDeviceName" maxlength="32" placeholder="Android phone" autocomplete="off"/>
+<button class="button button-outline" id="flowSaveDevice" type="button">Save device name</button></div></section>
+<div class="connection-internals" id="connectionInternals"><div class="connection-badge" id="connectionBadge"><span id="connectionText"></span></div><div id="connectionStatus" role="status"></div></div>
+<div class="transfer-grid" style="display:none!important">
+<section class="transfer-card send-card">
+<div class="card-heading"><div><span class="step">02 / SEND</span><h2>Send file</h2></div><span class="card-icon">↑</span></div>
+<label class="dropzone" for="fileInput" id="dropzone"><span class="upload-icon">↑</span><strong>Drop files here</strong><span>or <u>choose from device</u></span><small>You can select multiple files</small><input id="fileInput" multiple="" type="file"/></label>
+<div class="file-list hidden" id="fileList"></div>
+<button class="button button-primary send-button" disabled="" id="sendFiles">Send files <span aria-hidden="true">→</span></button>
+<div class="progress-wrap hidden" id="sendProgressWrap"><div class="progress-caption"><span id="sendProgressLabel">Sending…</span><span id="sendProgressValue">0%</span></div><div class="progress-track"><div class="progress-fill" id="sendProgressFill"></div></div></div>
+</section>
+<section class="transfer-card receive-card">
+<div class="card-heading"><div><span class="step">03 / RECEIVE</span><h2>Received files</h2></div><span class="card-icon receive-icon">↓</span></div>
+<div class="receive-empty" id="receiveEmpty"><div class="receive-illustration"><span>↓</span></div><strong>Ready to receive</strong><p>Incoming files will appear here.</p></div>
+<div class="incoming hidden" id="incoming"><div class="incoming-name" id="incomingName">Receiving file</div><div class="progress-caption"><span id="receiveProgressLabel">Preparing…</span><span id="receiveProgressValue">0%</span></div><div class="progress-track"><div class="progress-fill receive-fill" id="receiveProgressFill"></div></div></div>
+<div class="received-list" id="receivedList"></div>
+</section>
+</div>
+</section>
+<section aria-label="Fileport chat and transfers" class="flow-panel" data-tab="flow" id="flowPanel">
+<div class="flow-header"><div class="flow-avatar">F</div><div><span class="step">FILEPORT</span><h2>Connection &amp; chat</h2><p id="flowDeviceStatus">Chat starts when your devices connect.</p></div><span class="flow-live" id="flowLive">● Offline</span></div>
+<section aria-labelledby="androidReconnectTitle" aria-modal="false" class="flow-reconnect hidden" id="androidReconnect" role="dialog">
+<div class="flow-reconnect-card"><span aria-hidden="true" class="flow-reconnect-icon">↻</span><h2 id="androidReconnectTitle">Connection lost</h2><p>Open Fileport on your PC, then press Connect. The connection request will appear on this phone.</p>
+<button class="button button-primary" id="androidReconnectBtn" type="button">Reconnect</button>
+<p class="reconnect-search-status" id="reconnectNearbyList" role="status"></p><div class="manual-ip-group"><label for="reconnectManualIp">Local IP (fallback)</label><div class="manual-ip-row"><input id="reconnectManualIp" type="text" inputmode="decimal" placeholder="192.168.1.10" autocomplete="off"/><button class="button button-outline" id="reconnectManualConnect" type="button">Connect IP</button></div></div>
+</div>
+</section>
+<div aria-live="polite" class="flow-conversation" id="flowMessages"><div class="flow-empty">Chat starts when your computer connects.</div></div>
+<div class="flow-compose"><button aria-label="Attach file" class="flow-add-file" id="flowAddFile" title="Attach file" type="button">+</button><input aria-label="Message" autocomplete="off" id="flowText" maxlength="2000" placeholder="Type a message..."/><button class="button button-primary" disabled="" id="flowSendText" type="button">Send ↗</button></div>
+</section><section class="flow-panel history-screen" data-tab="history"><h2>Transfer history</h2><div class="flow-history"><h3>Recent connections and transfers</h3><div class="flow-recent" id="flowRecent"></div></div><div class="flow-disclaimer">History is stored locally. Transferred files are not included in history.</div><button class="button button-outline flow-clear-history" id="flowClearHistory" type="button">Clear history</button></section>
+<section aria-label="About Fileport" class="about-screen" data-tab="about">
+<div class="about-heading"><img alt="Fileport app icon" src="app-icon.png"/><div><h2>Fileport</h2><p>Android file transfer app</p></div></div>
+<div class="about-card"><div class="about-item"><span>Application</span><strong>Fileport</strong></div><div class="about-item"><span>Version</span><strong>2.7.0</strong></div><div class="about-item"><span>Platform</span><strong>Android</strong></div></div>
+<div class="about-card"><h3>What is Fileport?</h3><p>Fileport connects your phone and computer on the same Wi-Fi network for direct file transfer and chat.</p><p>Files are encrypted with FPTP/1. Transfer history stays on your device.</p></div>
+</section>
+</main>
+<div class="toast hidden" id="toast" role="status"></div>
+<section aria-labelledby="androidSetupTitle" aria-modal="true" class="flow-first-setup hidden" id="androidFirstSetup" role="dialog">
+<div class="flow-setup-card">
+<img alt="Fileport" class="flow-setup-logo" src="fileport-wordmark-dark.png"/>
+<h1 id="androidSetupTitle">Waiting for your computer</h1>
+<div aria-hidden="true" class="flow-setup-illustration"><img alt="" class="connection-art" src="connection-minimal.png"/></div>
+<p>Start Fileport setup on your computer. Keep both devices on the same Wi-Fi / LAN network.</p>
+<p class="setup-waiting-tip">The computer will find this phone automatically. The six-digit passkey will appear here when pairing begins.</p>
+</div>
+</section>
+<div class="fileport-request-overlay hidden" id="phoneRequestOverlay" role="dialog" aria-modal="true" aria-labelledby="phoneRequestTitle">
+<section class="fileport-request-card"><span class="secure-pair-top">FILEPORT · CONNECTION REQUEST</span>
+<h2 id="phoneRequestTitle">Connection request</h2><p id="phoneRequestText">Connect your phone to this computer?</p>
+<label class="fileport-auto-label"><input type="checkbox" id="phoneAutoConnect"/> Automatically connect to this computer</label>
+<div class="secure-pair-actions"><button class="button button-outline" id="phoneRequestCancel" type="button">Cancel</button><button class="button button-primary" id="phoneRequestApprove" type="button">OK</button></div></section></div>
+<div aria-labelledby="securePairTitle" aria-modal="true" class="secure-pair-overlay hidden" id="securePairOverlay" role="dialog"><section class="secure-pair-card"><div class="secure-pair-top">FILEPORT · SECURE PAIRING</div><h2 id="securePairTitle">Verify passkey</h2><p id="securePairMessage">Confirm the correct passkey to connect to your computer. Check both devices.</p><div class="secure-pair-code" id="securePairCode">······</div><div class="secure-pair-info" id="securePairInfo">Preparing code…</div><div class="secure-pair-actions"><button class="button button-outline" id="securePairReject" type="button">Cancel</button><button class="button button-primary" disabled="" id="securePairApprove" type="button">OK</button></div></section></div><script src="i18n.js"></script><script src="pairing.js"></script><script src="sha256-stream.js"></script><script src="app.js"></script><script src="discovery.js"></script><script src="flow.js"></script><script defer="" src="navigation.js"></script><script defer="" src="theme.js"></script><script defer="" src="connection-ui.js"></script><script src="manual-update.js"></script></body>
+</html>
