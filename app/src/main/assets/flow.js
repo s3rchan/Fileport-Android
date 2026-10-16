@@ -47,7 +47,7 @@
     activeTransfers.delete(id);
   }
   function system(text){const node=document.createElement('div');node.className='flow-event';node.textContent=text;panel.append(node);panel.scrollTop=panel.scrollHeight;}
-  function online(value){connected=!!value;btnText.disabled=!connected||!textField.value.trim();const s=byId('flowLive');s.classList.toggle('is-online',connected);s.textContent=connected?'● Connected':'● Offline';byId('flowDeviceStatus').textContent=connected?peer+' · secure connection':'Connection lost · Reconnect.';}
+  function online(value){connected=!!value;btnText.disabled=!connected||!textField.value.trim();const s=byId('flowLive');s.classList.toggle('is-online',connected);s.textContent=connected?'● Connected':'● Offline';byId('flowDeviceStatus').textContent=connected?peer+' · secure connection':'Waiting for your computer to connect.';}
   function send(){const value=textField.value.trim();if(!connected||!value)return;if(value.length>2000)return;try{window.FileportFlowTransport.sendText(value);message(value,true);addHistory('message','Sent message',null);textField.value='';btnText.disabled=true;}catch(err){system('Message not sent: '+err.message);}}
   btnText.addEventListener('click',send);textField.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});textField.addEventListener('input',()=>btnText.disabled=!connected||!textField.value.trim());
   addFile.addEventListener('click',()=>{
