@@ -28,7 +28,6 @@ import java.util.HashSet;
  */
 final class GithubUpdater {
  private static final String API="https://api.github.com/repos/s3rchan/Fileport-Android-2.8/releases/latest";
- private static final String RELEASE_PREFIX="https://github.com/s3rchan/Fileport-Android-2.8/releases/download/";
  private static final long MAX_APK=300L*1024*1024;
  private final MainActivity activity;
  private final WebView web;
@@ -105,8 +104,13 @@ final class GithubUpdater {
    JSONObject asset=assets.getJSONObject(i);
    if(!filename.equals(asset.optString("name")))continue;
    String url=asset.optString("browser_download_url","");
-   String expected=RELEASE_PREFIX+tag+"/"+filename;
-   if(!expected.equals(url))throw new Exception("Unexpected APK URL");
+   URL parsed=new URL(url);
+   String path=parsed.getPath();
+   if(!"https".equals(parsed.getProtocol())||!"github.com".equalsIgnoreCase(parsed.getHost())
+      ||!path.startsWith("/s3rchan/Fileport-Android")
+      ||!path.endsWith("/releases/download/"+tag+"/"+filename)
+      ||parsed.getQuery()!=null||parsed.getRef()!=null)
+    throw new Exception("Unexpected APK URL");
    long size=asset.optLong("size",-1);
    if(size<=0||size>MAX_APK)throw new Exception("APK size is invalid");
    String digest=asset.optString("digest","");
