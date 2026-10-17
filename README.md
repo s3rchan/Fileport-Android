@@ -1,77 +1,77 @@
 # Fileport — Android
 
-**Fileport**, Android telefonunuz ile Windows bilgisayarınız arasında **aynı Wi-Fi / yerel ağ (LAN)** üzerinden doğrudan dosya paylaşımı ve mesajlaşma sağlayan bir uygulamadır.
+**Fileport** enables direct file sharing and messaging between an Android phone and a Windows computer over the **same Wi-Fi or local area network (LAN)**.
 
-**Güncel Android sürümü: v2.9.1** · **Windows uygulaması:** [Fileport PC](https://github.com/s3rchan/Fileport-PC)
+**Current Android version: v2.9.1** · **Windows app:** [Fileport PC](https://github.com/s3rchan/Fileport-PC)
 
-[**⬇ Android APK'yı indir — GitHub Releases**](https://github.com/s3rchan/Fileport-Android/releases/latest) · [**Windows sürümünü indir**](https://github.com/s3rchan/Fileport-PC/releases/latest)
+[**Download the Android APK — GitHub Releases**](https://github.com/s3rchan/Fileport-Android/releases/latest) · [**Download the Windows app**](https://github.com/s3rchan/Fileport-PC/releases/latest)
 
-> Fileport, eski oda kodu / WebRTC sunucu projesinden farklıdır. Güncel uygulamada bağlantıyı **Windows PC başlatır**, Android telefon gelen isteği **onaylar**. Yerel dosya aktarımı için harici bir sunucu veya internet gerekmez.
+> Fileport is different from the earlier room-code/WebRTC server project. With the current application, the **Windows PC initiates the connection**, and the **Android phone approves it**. Direct local transfers do not require an external server or internet access.
 
-## Öne çıkan özellikler
+## Features
 
-- **PC'den başlatılan bağlantı:** Windows uygulamasından cihaz seçilip bağlantı isteği gönderilir.
-- **Android onay ekranı:** Telefonda gelen isteği **Tamam** veya **İptal** ile yanıtlayabilirsiniz.
-- **Güvenilir cihazlar:** İsteğe bağlı **Bu cihaza otomatik bağlan** izni ile sonraki bağlantıları kolaylaştırabilirsiniz.
-- **İlk eşleştirmede altı haneli kod:** Her iki cihazdaki güvenlik kodunu karşılaştırıp onaylayın.
-- **Dosya aktarımı ve sohbet:** Dosyalar yerel ağda cihazdan cihaza gönderilir; metin mesajları da paylaşılabilir.
-- **Yerel geçmiş:** Bağlantı ve aktarım geçmişi cihazda tutulur; gönderilen dosyalar sohbet geçmişine kaydedilmez.
-- **Uygulama içinden GitHub güncellemesi:** Yeni sürümler kontrol edilip indirilebilir; Android kurulum için kullanıcı onayı ister.
-- **Çevrimdışı APK güncellemesi:** Telefonda bulunan uyumlu bir APK dosyası seçilebilir.
-- **Türkçe ve İngilizce arayüz.**
+- **PC-initiated connection:** Select a phone in the Windows app and send a connection request.
+- **Android approval screen:** Accept or reject an incoming connection using **OK** or **Cancel**.
+- **Trusted devices:** Optionally allow **Automatically connect to this computer** for future connections.
+- **Six-digit security verification:** Compare and approve the code on both devices during initial pairing.
+- **File transfers and chat:** Exchange files and text messages directly over the LAN.
+- **Local history:** Connection and transfer history stays on the device; transferred files are not saved in chat history.
+- **In-app GitHub updates:** Check for newer versions, download an APK, and approve its installation through Android.
+- **Offline APK updates:** Select a compatible APK file already stored on your phone.
+- **English and Turkish interface.**
 
-## Sistem gereksinimleri
+## Requirements
 
-- **Android 10 (API 29) veya üzeri**.
-- Aynı yerel ağda erişilebilir bir Windows bilgisayar ve Fileport PC uygulaması.
-- Telefon ile bilgisayar arasında iletişime izin veren Wi-Fi / LAN bağlantısı.
+- **Android 10 (API level 29) or newer**.
+- A Windows computer running Fileport PC, reachable on the same local network.
+- A Wi-Fi/LAN connection that allows the phone and computer to communicate.
 
-> Yerel dosya aktarımı internetsiz çalışabilir. **GitHub Releases üzerinden sürüm kontrolü ve APK indirme** internet gerektirir.
+> Local file transfers may work without internet access. **Checking GitHub Releases and downloading an APK update** requires internet access.
 
-## Android kurulumu
+## Install Fileport Android
 
-1. [Fileport Android Releases](https://github.com/s3rchan/Fileport-Android/releases/latest) sayfasını açın.
-2. **Assets** bölümündeki `Fileport-Android-vX.Y.Z.apk` dosyasını indirin.
-3. Android'in gerektiğinde gösterdiği **bu kaynaktan uygulama yükleme** iznini inceleyip kurulumu onaylayın.
-4. Fileport'u açın. İlk eşleştirmede uygulama bilgisayardan gelecek bağlantı isteğini bekler.
-5. Windows bilgisayarınızda Fileport PC'yi açın ve telefonunuzu seçerek bağlantıyı başlatın.
-6. Telefonda gelen **Bağlantı isteği** ekranını onaylayın. İlk eşleştirmede altı haneli kodları karşılaştırıp iki cihazda da onay verin.
-7. Bağlantı sağlandıktan sonra sohbet ve dosya paylaşımını kullanın.
+1. Open [Fileport Android Releases](https://github.com/s3rchan/Fileport-Android/releases/latest).
+2. Download `Fileport-Android-vX.Y.Z.apk` from the **Assets** section.
+3. Review Android's installation prompt and, if necessary, allow installation from the selected source.
+4. Launch Fileport on your phone. On initial setup, the app waits for a connection request from your computer.
+5. Open Fileport PC on Windows, select your phone, and initiate the connection.
+6. Approve the **Connection request** on Android. During first-time pairing, compare the six-digit code on both devices and confirm.
+7. Once the connection is established, use chat and file sharing.
 
-**Not:** Windows bilgisayarının isteği başlatması beklenir. Android tarafında ayrıca **Tekrar bağlan** penceresi veya manuel IP girişine gerek yoktur.
+**Note:** The Windows PC initiates connections. The Android app no longer needs a separate **Reconnect** dialog or manual IP address entry.
 
-## GitHub üzerinden güncelleme
+## Update through GitHub
 
-Fileport Android v2.9.0 sürümünden itibaren uygulama içinden yeni sürüm sorgulanabilir:
+Since Fileport Android v2.9.0, updates can be checked from within the app:
 
-1. Fileport'un sağ üstündeki **⋮** menüsünü açın.
-2. **GitHub updates / GitHub güncellemeleri → Check for updates / Güncellemeleri denetle** seçeneğine dokunun.
-3. Yeni bir sürüm varsa **Download and install / İndir ve yükle** seçeneğini kullanın.
-4. İndirme ve APK doğrulaması sonrasında Android'in kurulum onayını tamamlayın.
+1. Open the **⋮** menu in the upper-right corner.
+2. Select **GitHub updates → Check for updates**.
+3. When a newer version is available, choose **Download and install**.
+4. After downloading and verifying the APK, confirm installation through Android's system installer.
 
-Güncelleme mekanizması paket kimliğini, sürüm numarasını ve yüklü uygulamayla uyumlu imzalama sertifikasını kontrol eder. Uygulama güncellemeleri **sessizce kurulmaz**; Android kullanıcının onayını ister.
+The updater checks the application package ID, version, and signing certificate against the installed app. **Installation is never silent:** Android asks the user to approve it.
 
-**APK imzası önemlidir:** `Actions` bölümünden indirilen **debug APK**, farklı imzayla üretilebildiği için resmî Release APK'sının üzerine yüklenemeyebilir. Günlük kullanım ve sonraki sürümlere güncelleme için **Releases'deki imzalı APK'yı** tercih edin. Debug sürümünün kaldırılması uygulamadaki yerel verileri silebilir.
+**APK signing matters:** A **debug APK** downloaded from GitHub Actions may use a different signing key and might not update over the official Release APK. For ordinary installation and future updates, use the **signed APK from Releases**. Uninstalling a debug build may erase local app data.
 
-## Sürümler
+## Version history
 
-| Sürüm | Başlıca değişiklik |
+| Version | Main changes |
 | --- | --- |
-| **v2.9.1** | Android'deki eski yeniden bağlanma / manuel IP penceresi kaldırıldı; PC'nin başlattığı bağlantı akışı korundu. |
-| **v2.9.0** | GitHub Releases üzerinden yeni sürüm kontrolü, APK indirme ve kurulum onayı eklendi. |
-| **v2.8.0** | Kaynak dosya adları İngilizceleştirildi ve GitHub Actions ile APK derleme altyapısı hazırlandı. |
+| **v2.9.1** | Removed the obsolete Android reconnect/manual IP dialog while retaining PC-initiated connections. |
+| **v2.9.0** | Added GitHub Releases update checks, APK download, and user-approved installation. |
+| **v2.8.0** | Standardized source file naming in English and introduced GitHub Actions APK builds. |
 
-[**Tüm Android sürümleri**](https://github.com/s3rchan/Fileport-Android/releases)
+[**All Android releases**](https://github.com/s3rchan/Fileport-Android/releases)
 
-## Geliştirme ve derleme
+## Development and builds
 
-Kaynaklar Java tabanlı Android uygulama katmanı ile uygulama içinde çalışan HTML, CSS ve JavaScript arayüzünü içerir. Proje Gradle ile derlenir.
+The project combines a Java-based Android application layer with an embedded **HTML, CSS, and JavaScript** interface. Builds use Gradle.
 
-Geliştirici gereksinimleri:
+Developer requirements:
 
 - JDK 17
-- Android SDK Platform 35 ve Build Tools 35
-- Gradle 8.10.2 (CI ortamında)
+- Android SDK Platform 35 and Build Tools 35
+- Gradle 8.10.2 (as configured in CI)
 
 ```bash
 gradle :app:assembleDebug
@@ -79,48 +79,48 @@ gradle :app:assembleDebug
 
 ### GitHub Actions
 
-- [**Build Fileport Android APK**](https://github.com/s3rchan/Fileport-Android/actions) — `main` dalındaki değişikliklerden **test amaçlı debug APK** oluşturur ve **Artifacts** bölümüne yükler.
-- **Publish Fileport Android Release** — `android-vX.Y.Z` sürüm etiketiyle veya Actions içindeki **Run workflow** düğmesiyle **imzalı Release APK** üretir, imzasını doğrular ve GitHub Releases'e yükler.
+- [**Build Fileport Android APK**](https://github.com/s3rchan/Fileport-Android/actions) — generates a **debug APK for testing** when `main` changes, available under **Artifacts**.
+- **Publish Fileport Android Release** — builds a **signed Release APK**, verifies its signature, and uploads it to GitHub Releases when an `android-vX.Y.Z` tag is pushed or a manual **Run workflow** is started.
 
-İmzalı Release derlemesi için GitHub Actions repository secrets alanında şu değerler yapılandırılmış olmalıdır:
+Signed releases require these repository secrets to be configured in GitHub Actions:
 
-| Secret adı | Amaç |
+| Secret | Purpose |
 | --- | --- |
-| `FILEPORT_ANDROID_KEYSTORE_BASE64` | Kalıcı imzalama dosyasının Base64 içeriği |
-| `FILEPORT_ANDROID_KEYSTORE_PASSWORD` | Keystore şifresi |
-| `FILEPORT_ANDROID_KEY_ALIAS` | Anahtar takma adı |
-| `FILEPORT_ANDROID_KEY_PASSWORD` | İmzalama anahtarı şifresi |
+| `FILEPORT_ANDROID_KEYSTORE_BASE64` | Base64 encoding of the persistent release keystore |
+| `FILEPORT_ANDROID_KEYSTORE_PASSWORD` | Keystore password |
+| `FILEPORT_ANDROID_KEY_ALIAS` | Signing key alias |
+| `FILEPORT_ANDROID_KEY_PASSWORD` | Signing key password |
 
-**İmzalama dosyanızı ve parolalarınızı kaynak kod deposuna yüklemeyin.** Gelecekte uygulamanın aynı kurulum üzerine güncellenebilmesi için aynı imzalama anahtarının güvenle korunması gerekir.
+**Never commit signing keys or passwords to the source repository.** Safely preserve the same signing key to support future in-place upgrades.
 
-**Android uygulama kimliği:** `com.yakin.app`. Projede kullanılan Java namespace'i `com.fileport.android` olsa da uygulama kimliği uyumlu güncellemeler için korunmaktadır.
+**Android application ID:** `com.yakin.app`. The Java namespace is `com.fileport.android`, but the application ID remains unchanged for update compatibility.
 
-## Güvenlik ve gizlilik
+## Security and privacy
 
-- Fileport, yerel ağdaki cihazlar arasında doğrudan iletişim kurar.
-- İlk eşleştirmede gösterilen **altı haneli kodu mutlaka karşılaştırın**.
-- Tanımadığınız bilgisayarlardan gelen istekleri kabul etmeyin.
-- Aktarımda kullanılan **FPTP/1** deneysel bir şifreli uygulama protokolüdür; **bağımsız bir üçüncü taraf güvenlik denetiminden geçmemiştir**.
-- GitHub güncellemelerini yalnızca resmî [Fileport Android Releases](https://github.com/s3rchan/Fileport-Android/releases) üzerinden edinin.
+- Fileport connects devices directly over the local network.
+- **Always compare the six-digit security code** when pairing for the first time.
+- Do not approve connection requests from unknown computers.
+- The FPTP/1 transfer protocol uses experimental application-level encryption and **has not undergone an independent third-party security audit**.
+- Obtain updates only through the official [Fileport Android Releases](https://github.com/s3rchan/Fileport-Android/releases).
 
-Protokol ayrıntıları için [FPTP_PROTOCOL_v1.md](FPTP_PROTOCOL_v1.md) dosyasına bakın.
+For additional technical information, see [FPTP_PROTOCOL_v1.md](FPTP_PROTOCOL_v1.md).
 
-## Fileport marka kimliği
+## Fileport brand identity
 
-Gelecek sürümler için belirlenen resmî tasarım standartları:
+Approved design standards for upcoming app versions:
 
-| Öğe | Değer |
+| Element | Standard |
 | --- | --- |
-| Ana mavi | `#0637E7` |
-| Açık mavi | `#368CFF` |
-| Lacivert | `#01224F` |
-| Açık arka plan | `#CFE1F4` |
-| Beyaz | `#FFFFFF` |
-| Yazı tipi | **Open Sauce** |
-| Logo | **Mavi zemin üzerinde beyaz çapa ve Fileport yazısı** |
+| Primary blue | `#0637E7` |
+| Light blue | `#368CFF` |
+| Navy | `#01224F` |
+| Light background | `#CFE1F4` |
+| White | `#FFFFFF` |
+| Font | **Open Sauce** |
+| Logo | **White anchor symbol and Fileport wordmark on blue** |
 
-> Marka kimliği gelecek uygulama sürümlerinde uygulanacaktır. Burada belirtilmesi mevcut v2.9.1 APK'sının görsellerinin değiştiği anlamına gelmez.
+> The updated brand identity will be applied to future versions. Documenting it here does not mean the current v2.9.1 APK already includes the new visuals.
 
 ---
 
-**Fileport — Android ve Windows arasında doğrudan dosya aktarımı ve sohbet.**
+**Fileport — direct file transfers and chat between Android and Windows.**
