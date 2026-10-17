@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/build-android.yml"
       - "app/**"
+      - "scripts/**"
       - "settings.gradle"
       - "build.gradle"
       - "gradle.properties"
@@ -49,6 +50,11 @@ jobs:
         uses: android-actions/setup-android@v3
         with:
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+
+      - name: Generate official Fileport Android icons
+        run: |
+          python3 -m pip install Pillow==11.3.0
+          python3 scripts/generate_brand_icons.py
 
       - name: Check JavaScript syntax
         shell: bash
