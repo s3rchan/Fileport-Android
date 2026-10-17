@@ -65,3 +65,6 @@ body,button,input,select{font-family:"Open Sauce Sans",system-ui,-apple-system,"
  :root[data-theme="system"] .flow-compose input{background:#1f2d43;color:#e7eefb;border-color:#3e536f}
  :root[data-theme="system"] .about-screen[data-tab=settings] .nav-language-section select{background:#1d2a3b;color:#e7eefb;border-color:#405472}
 }
+
+/* Apply the official typeface even where older components specify a font shorthand. */
+.shell,.shell button,.shell input,.shell select,.shell h1,.shell h2,.shell h3,.flow-first-setup,.secure-pair-overlay{font-family:"Open Sauce Sans",system-ui,-apple-system,"Segoe UI",sans-serif!important}
