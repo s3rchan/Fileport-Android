@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<meta content="#f5f7fb" name="theme-color"/>
+<meta content="#01224F" name="theme-color"/>
 <meta content="default-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'" http-equiv="Content-Security-Policy"/>
 <title>Fileport — Local File Transfer</title>
 <link href="styles.css" rel="stylesheet"/>
@@ -16,14 +16,12 @@
  .nav-language-section {padding:12px 16px;justify-content:space-between}
  .flow-setup-logo {object-fit:contain;max-width:min(240px,70vw);max-height:80px;filter:none!important;mix-blend-mode:normal!important;}
  .side-brand img,.desktop-top-brand img,.brand-wordmark {filter:none!important;mix-blend-mode:normal!important;object-fit:contain}
- </style></head>
+ </style><link rel="stylesheet" href="brand-v30.css"/></head>
 <body>
 <main class="shell">
-<header class="topbar"><div class="mobile-brand"><img alt="Fileport" class="brand-wordmark" src="fileport-wordmark-dark.png"/></div><button aria-expanded="false" aria-haspopup="true" aria-label="More options" class="nav-toggle" id="navToggle" type="button">⋮</button></header><div class="menu-backdrop" hidden="" id="menuBackdrop"></div><nav aria-label="More options" class="mobile-nav" id="mobileNav"><button class="mobile-nav-item" data-switch="flow" type="button">Fileport</button><button class="mobile-nav-item" data-switch="connect" type="button">Devices</button><button class="mobile-nav-item" data-switch="history" type="button">History</button><button class="mobile-nav-item" data-switch="about" type="button">About</button><button class="mobile-nav-item" data-switch="settings" type="button">Settings</button><div class="nav-theme-section"><div class="nav-theme-label">Appearance</div><div aria-label="Theme" class="nav-theme-options" role="group"><button data-theme-choice="system" type="button">System</button><button data-theme-choice="light" type="button">Light</button><button data-theme-choice="dark" type="button">Dark</button></div></div></nav>
+<header class="topbar"><div class="mobile-brand"><img alt="" class="fileport-brand-icon" src="fileport-brand-icon.svg"/><span class="fileport-brand-name">Fileport</span></div><button aria-expanded="false" aria-haspopup="true" aria-label="More options" class="nav-toggle" id="navToggle" type="button">⋮</button></header><div class="menu-backdrop" hidden="" id="menuBackdrop"></div><nav aria-label="More options" class="mobile-nav" id="mobileNav"><button class="mobile-nav-item" data-switch="flow" type="button">Fileport</button><button class="mobile-nav-item" data-switch="connect" type="button">Devices</button><button class="mobile-nav-item" data-switch="history" type="button">History</button><button class="mobile-nav-item" data-switch="about" type="button">About</button><button class="mobile-nav-item" data-switch="settings" type="button">Settings</button></nav>
 <section aria-label="Device connection" class="workspace" data-tab="connect"><section class="native-pair"><h2>Paired devices</h2><p>Manage saved trusted devices here. Removing the last device returns to setup.</p><section class="trusted-devices"><h3>Trusted devices</h3><div id="trustedDeviceList"></div></section>
-<div class="device-name-editor"><label for="flowDeviceName">This device</label>
-<input id="flowDeviceName" maxlength="32" placeholder="Android phone" autocomplete="off"/>
-<button class="button button-outline" id="flowSaveDevice" type="button">Save device name</button></div></section>
+</section>
 <div class="connection-internals" id="connectionInternals"><div class="connection-badge" id="connectionBadge"><span id="connectionText"></span></div><div id="connectionStatus" role="status"></div></div>
 <div class="transfer-grid" style="display:none!important">
 <section class="transfer-card send-card">
@@ -48,16 +46,18 @@
 <div class="flow-compose"><button aria-label="Attach file" class="flow-add-file" id="flowAddFile" title="Attach file" type="button">+</button><input aria-label="Message" autocomplete="off" id="flowText" maxlength="2000" placeholder="Type a message..."/><button class="button button-primary" disabled="" id="flowSendText" type="button">Send ↗</button></div>
 </section><section class="flow-panel history-screen" data-tab="history"><h2>Transfer history</h2><div class="flow-history"><h3>Recent connections and transfers</h3><div class="flow-recent" id="flowRecent"></div></div><div class="flow-disclaimer">History is stored locally. Transferred files are not included in history.</div><button class="button button-outline flow-clear-history" id="flowClearHistory" type="button">Clear history</button></section>
 <section aria-label="About Fileport" class="about-screen" data-tab="about">
-<div class="about-heading"><img alt="Fileport app icon" src="app-icon.png"/><div><h2>Fileport</h2><p>Android file transfer app</p></div></div>
-<div class="about-card"><div class="about-item"><span>Application</span><strong>Fileport</strong></div><div class="about-item"><span>Version</span><strong>2.9.1</strong></div><div class="about-item"><span>Platform</span><strong>Android</strong></div></div>
+<div class="about-heading"><img alt="Fileport app icon" src="fileport-brand-icon.svg"/><div><h2>Fileport</h2><p>Android file transfer app</p></div></div>
+<div class="about-card"><div class="about-item"><span>Application</span><strong>Fileport</strong></div><div class="about-item"><span>Version</span><strong>3.0.0</strong></div><div class="about-item"><span>Platform</span><strong>Android</strong></div></div>
 <div class="about-card"><h3>What is Fileport?</h3><p>Fileport connects your phone and computer on the same Wi-Fi network for direct file transfer and chat.</p><p>Files are encrypted with FPTP/1. Transfer history stays on your device.</p></div>
 </section>
-<section aria-label="Fileport settings" class="about-screen" data-tab="settings"><h2>Settings</h2><div class="about-card"><h3>Language</h3><div class="nav-language-section"><label for="languageSelect">Language / Dil</label><select aria-label="Language" id="languageSelect"><option value="en">English</option><option value="tr">Türkçe</option></select></div></div><div class="about-card"><div class="nav-update-section"><div>GitHub updates</div><button type="button" id="checkGithubUpdate">Check for updates</button><button type="button" id="downloadGithubUpdate" hidden>Download and install</button><button type="button" id="installGithubUpdate" hidden>Install downloaded APK</button><p id="apkUpdateStatus" role="status" aria-live="polite"></p><div>Offline update</div><button type="button" id="selectUpdateApk">Select update APK</button></div></div></section>
+<section aria-label="Fileport settings" class="about-screen" data-tab="settings"><h2>Settings</h2><div class="about-card"><h3>GitHub updates</h3><p>Check for new Fileport Android versions. Only update checks and downloads need internet.</p><div class="nav-update-section"><button type="button" id="checkGithubUpdate">Check for updates</button><button type="button" id="downloadGithubUpdate" hidden>Download and install</button><button type="button" id="installGithubUpdate" hidden>Install downloaded APK</button><p id="apkUpdateStatus" role="status" aria-live="polite"></p><div>Offline update</div><button type="button" id="selectUpdateApk">Select update APK</button></div></div><div class="about-card"><h3>Language</h3><p>Choose your preferred language for the application.</p><div class="nav-language-section"><label for="languageSelect">Language / Dil</label><select aria-label="Language" id="languageSelect"><option value="en">English</option><option value="tr">Türkçe</option></select></div></div><div class="about-card"><h3>Appearance</h3><div class="nav-theme-section"><div class="nav-theme-label">Appearance</div><div aria-label="Theme" class="nav-theme-options" role="group"><button data-theme-choice="system" type="button">System</button><button data-theme-choice="light" type="button">Light</button><button data-theme-choice="dark" type="button">Dark</button></div></div></div><div class="about-card"><h3>This device</h3><p>Choose the device name shown to your connected computer.</p><div class="device-name-editor"><label for="flowDeviceName">This device</label>
+<input id="flowDeviceName" maxlength="32" placeholder="Android phone" autocomplete="off"/>
+<button class="button button-outline" id="flowSaveDevice" type="button">Save device name</button></div></div></section>
 </main>
 <div class="toast hidden" id="toast" role="status"></div>
 <section aria-labelledby="androidSetupTitle" aria-modal="true" class="flow-first-setup hidden" id="androidFirstSetup" role="dialog">
 <div class="flow-setup-card">
-<img alt="Fileport" class="flow-setup-logo" src="fileport-wordmark-dark.png"/>
+<img alt="Fileport" class="flow-setup-logo" src="fileport-brand-icon.svg"/>
 <h1 id="androidSetupTitle">Waiting for your computer</h1>
 <div aria-hidden="true" class="flow-setup-illustration"><img alt="" class="connection-art" src="connection-minimal.png"/></div>
 <p>Start Fileport setup on your computer. Keep both devices on the same Wi-Fi / LAN network.</p>
