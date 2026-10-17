@@ -55,6 +55,7 @@ jobs:
         run: |
           python3 -m pip install Pillow==11.3.0
           python3 scripts/generate_brand_icons.py
+          python3 scripts/install_brand_fonts.py
 
       - name: Check JavaScript syntax
         shell: bash
