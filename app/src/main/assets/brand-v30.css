@@ -52,3 +52,16 @@ body,button,input,select{font-family:"Open Sauce Sans",system-ui,-apple-system,"
 :root[data-theme="dark"] .about-screen[data-tab=settings] .nav-theme-options button{border-color:#485c7b;color:#ebf2ff}
 :root[data-theme="dark"] .about-screen[data-tab=settings] .nav-theme-options button.selected{background:#0637e7;border-color:#0637e7}
 @media(prefers-reduced-motion:reduce){body *,body *::before,body *::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* System theme: match Android's dark appearance without overriding user selection. */
+@media(prefers-color-scheme:dark){
+ :root[data-theme="system"]{--app-bg:#101722;color:#e7eefb;background:#101722}
+ :root[data-theme="system"] body,:root[data-theme="system"] .shell{background:#101722;color:#e7eefb}
+ :root[data-theme="system"] .topbar{background:#172232;border-color:#29394c}
+ :root[data-theme="system"] .mobile-brand .fileport-brand-name{color:#f1f6ff}
+ :root[data-theme="system"] .mobile-nav{background:#172232;border-color:#29394c}
+ :root[data-theme="system"] .about-card,:root[data-theme="system"] .trusted-devices,:root[data-theme="system"] .flow-panel{background:#172232;color:#e7eefb;border-color:#29394c}
+ :root[data-theme="system"] .flow-conversation{background:#172232;border-color:#29394c}
+ :root[data-theme="system"] .flow-compose input{background:#1f2d43;color:#e7eefb;border-color:#3e536f}
+ :root[data-theme="system"] .about-screen[data-tab=settings] .nav-language-section select{background:#1d2a3b;color:#e7eefb;border-color:#405472}
+}
