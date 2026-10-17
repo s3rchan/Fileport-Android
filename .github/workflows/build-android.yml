@@ -51,11 +51,16 @@ jobs:
         with:
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
 
+      - name: Set up Python for brand asset generation
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Generate official Fileport Android icons
         run: |
-          python3 -m pip install Pillow==11.3.0
-          python3 scripts/generate_brand_icons.py
-          python3 scripts/install_brand_fonts.py
+          python -m pip install Pillow==11.3.0
+          python scripts/generate_brand_icons.py
+          python scripts/install_brand_fonts.py
 
       - name: Check JavaScript syntax
         shell: bash
