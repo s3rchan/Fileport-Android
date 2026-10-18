@@ -1,6 +1,7 @@
 name: Build Fileport Android APK
 
 on:
+  pull_request:
   push:
     branches:
       - main
