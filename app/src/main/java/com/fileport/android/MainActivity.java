@@ -326,13 +326,16 @@ public class MainActivity extends Activity {
     out.setBroadcast(true);
     while(lanActive){
      String id=lanId;
-     if(id.matches("[a-f0-9]{64}")){
+     boolean connectedNow;
+     synchronized(transportLock){connectedNow=transportSocket!=null;}
+     // No need to repeatedly advertise while a TCP session is already active.
+     if(!connectedNow && id.matches("[a-f0-9]{64}")){
       String payload="FILEPORT_PHONE_V1|"+id+"|"+lanName;
       byte[] bytes=payload.getBytes(StandardCharsets.UTF_8);
       DatagramPacket p=new DatagramPacket(bytes,bytes.length,InetAddress.getByName("255.255.255.255"),38478);
       try{out.send(p);}catch(Exception error){android.util.Log.w("FileportLan","Announcement failed",error);}
      }
-     try{Thread.sleep(2000);}catch(InterruptedException e){break;}
+     try{Thread.sleep(backgrounded?4500:2000);}catch(InterruptedException e){break;}
     }
    }catch(Exception error){android.util.Log.w("FileportLan","Announcement unavailable",error);}
   },"fileport-lan-advertiser").start();
