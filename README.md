@@ -2,7 +2,7 @@
 
 **Fileport** enables direct file sharing and messaging between an Android phone and a Windows computer over the **same Wi-Fi or local area network (LAN)**.
 
-**Source version:** v3.0.1 (development; published Release version may differ) · **Windows app:** [Fileport PC](https://github.com/s3rchan/Fileport-PC)
+**Source version:** v3.0.2 (development; published Release version may differ) · **Windows app:** [Fileport PC](https://github.com/s3rchan/Fileport-PC)
 
 [**Download the Android APK — GitHub Releases**](https://github.com/s3rchan/Fileport-Android/releases/latest) · [**Download the Windows app**](https://github.com/s3rchan/Fileport-PC/releases/latest)
 
@@ -57,6 +57,7 @@ The updater checks the application package ID, version, and signing certificate 
 
 | Version | Main changes |
 | --- | --- |
+| **v3.0.2** | Music Share approval prompt, encrypted audio transfer from PC and native Android two-device playback control. |
 | **v3.0.1** | Consistent patch/minor version workflow for new builds; synchronized Gradle and About screen. |
 | **v3.0.0** | New Fileport identity, approved Newdesign branding, Settings and three-minute transfer-aware Android background service; improved LAN reconnect. |
 | **v2.9.1** | Removed the obsolete Android reconnect/manual IP dialog while retaining PC-initiated connections. |
@@ -135,3 +136,10 @@ For a new ordinary app build increase the final number: `3.0.1 → 3.0.2`. For a
 Run `python scripts/bump_version.py patch` or `python scripts/bump_version.py minor` **before committing a new app build**. This updates Gradle `versionName`, increases Android `versionCode` monotonically, updates the About screen and README. CI runs `python scripts/bump_version.py --check`. An unchanged CI rerun is the same software version, not a new product release.
 
 The Android `applicationId` remains `com.yakin.app` to support updates from existing installations; changing it is not part of visual branding.
+
+
+## Music Share (v3.0.2 development)
+
+Open **Music** in the Android menu. When Windows Fileport v1.9.3+ sends a Music Share offer, review the audio file name and size, then press **Accept music** or **Decline**. No music file bytes are transferred before acceptance. Once the complete encrypted file is saved and SHA-256 verified, Fileport saves it in Android Downloads, prepares the native Android media player, and shows **Play on both**. The Play/Stop buttons on either device send an authenticated command to the other device. Both players schedule the start with a 1.6-second local lead time for **approximate** sync; accuracy depends on Android decoder startup, device buffering, and Wi-Fi latency.
+
+Music offers support MP3, M4A, WAV, OGG, and FLAC up to 150 MB. Both apps must be running and connected for remote playback control. The Android media player uses its own MediaStore Downloads URI and requires no cloud service or additional audio-file permissions. Some devices may not support every codec; unsupported audio is not played. A signed Release APK must be used for in-place upgrades over an existing signed app.
