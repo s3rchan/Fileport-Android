@@ -25,10 +25,13 @@
    const trusted=identity.trusted(packet.id);
    if(packet.mode==='reconnect'&&!trusted)return;
    if(packet.mode==='setup'&&trusted)return; // first pairing only
-   const key=packet.id+'|'+packet.mode;
-   for(const [k,until] of seen)if(until<Date.now())seen.delete(k);
+   // Deduplicate UDP retries for this signed nonce, not the entire device.
+   // A new user-initiated connection attempt must not be blocked for 65 seconds.
+   const key=packet.id+'|'+packet.nonce;
+   const now=Date.now();
+   for(const [k,until] of seen)if(until<now)seen.delete(k);
    if(seen.has(key)||connecting||window.FileportConnection?.connected||request)return;
-   seen.set(key,Date.now()+65000);
+   seen.set(key,now+35000);
    request={...packet,address};
    if(trusted&&identity.autoAllowed(packet.id)){
     beginConnect();return;
