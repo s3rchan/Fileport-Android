@@ -18,7 +18,11 @@ concurrency:
 jobs:
   publish:
     name: Build signed APK and publish GitHub Release
-    if: github.event_name != 'push' || startsWith(github.ref, 'refs/tags/android-v') || (github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'release: Fileport Android v3.0.3'))
+    if: >-
+      github.event_name != 'push' ||
+      startsWith(github.ref, 'refs/tags/android-v') ||
+      (github.ref == 'refs/heads/main' &&
+      startsWith(github.event.head_commit.message, 'release: Fileport Android v3.0.3'))
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
