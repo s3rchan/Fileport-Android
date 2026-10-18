@@ -59,6 +59,7 @@ jobs:
       - name: Generate official Fileport Android icons
         run: |
           python -m pip install Pillow==11.3.0
+          python scripts/install_newdesign_assets.py
           python scripts/generate_brand_icons.py
           python scripts/install_brand_fonts.py
 
