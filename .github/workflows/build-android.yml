@@ -68,6 +68,9 @@ jobs:
         run: python scripts/bump_version.py --check
 
 
+      - name: Test retired-feature cleanup
+        run: node tests/file-only.test.cjs
+
       - name: Check JavaScript syntax
         shell: bash
         run: |
