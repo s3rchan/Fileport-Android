@@ -67,8 +67,6 @@ jobs:
       - name: Verify app build version consistency
         run: python scripts/bump_version.py --check
 
-      - name: Test music authorization and synchronized playback
-        run: node tests/music.test.cjs
 
       - name: Check JavaScript syntax
         shell: bash

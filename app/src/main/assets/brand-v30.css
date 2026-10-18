@@ -81,24 +81,3 @@ body,button,input,select{font-family:"Open Sauce Sans",system-ui,-apple-system,"
  :root[data-theme="system"] .mobile-brand .logo-night{display:block}
 }
 
-/* Music Share — reuses official Fileport colors. */
-.about-screen[data-tab=music].tab-visible{min-height:0;overflow-y:auto}
-.music-mobile .music-mobile-card{padding:22px 17px}
-.music-mobile h3{overflow-wrap:anywhere;font-size:17px;margin-bottom:10px}
-.music-mobile .music-controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}
-.music-mobile .music-controls button{flex:1;min-width:130px;border-radius:12px;min-height:44px;font-weight:650}
-.music-mobile .music-controls .button-primary{background:#0637e7;border-color:#0637e7;color:#fff}
-.music-mobile button:disabled{opacity:.46}
-.music-mobile .music-footnote{font-size:12px;margin:18px 7px;line-height:1.6}
-.music-offer-overlay{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:19px;background:#01224fa6}
-.music-offer-overlay.hidden{display:none!important}
-.music-offer-card{background:#fff;color:#01224f;border-radius:19px;padding:25px 22px;max-width:430px;width:100%;box-sizing:border-box;border:1px solid #cfe1f4;box-shadow:0 25px 65px #01224f45}
-.music-offer-card h2{font-size:21px;margin:15px 0 9px}
-.music-offer-card p{font-size:13px;line-height:1.6;color:#516b8b;overflow-wrap:anywhere}
-.music-offer-card .music-note{width:49px;height:49px;border-radius:15px;display:grid;place-items:center;background:#cfe1f4;color:#0637e7;font-size:27px}
-.music-offer-card .music-controls{display:flex;gap:10px;margin-top:19px}
-.music-offer-card button{min-height:42px;flex:1;border-radius:10px}
-.music-offer-card button.button-primary{background:#0637e7;border-color:#0637e7;color:#fff}
-:root[data-theme=dark] .music-offer-card{background:#172232;color:#fff;border-color:#334966}
-:root[data-theme=dark] .music-offer-card p{color:#bccfe7}
-@media(prefers-color-scheme:dark){:root[data-theme=system] .music-offer-card{background:#172232;color:white;border-color:#334966}}
