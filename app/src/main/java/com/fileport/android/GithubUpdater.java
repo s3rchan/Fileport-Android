@@ -189,7 +189,7 @@ final class GithubUpdater {
   Signature[] incoming=Build.VERSION.SDK_INT>=28?next.signingInfo.getApkContentsSigners():next.signatures;
   Signature[] existing=Build.VERSION.SDK_INT>=28?current.signingInfo.getApkContentsSigners():current.signatures;
   if(incoming==null||existing==null||incoming.length==0||incoming.length!=existing.length)
-   throw new Exception("APK signing key differs from the installed version");
+   throw new Exception("APK signer mismatch. Android requires the SAME certificate for every in-place update. Install official Fileport Releases signed with the original key; a debug or differently signed installation may require a one-time uninstall after backing up pairing information");
   HashSet<String> signatures=new HashSet<>();
   for(Signature signature:existing)signatures.add(signature.toCharsString());
   for(Signature signature:incoming)if(!signatures.contains(signature.toCharsString()))
