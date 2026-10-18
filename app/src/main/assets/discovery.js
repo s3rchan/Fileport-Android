@@ -3,7 +3,7 @@
 (() => {
  'use strict';
  const $=id=>document.getElementById(id),identity=window.FileportIdentity;
- let request=null,seen=new Map(),connecting=false,pendingPeerId=null;
+ let request=null,seen=new Map(),connecting=false,pendingPeerId=null,connectingSince=0;
  const overlay=$('phoneRequestOverlay');
  const text=()=>window.FileportI18n?.language==='tr';
  function close(){overlay.classList.add('hidden');request=null;}
@@ -30,6 +30,9 @@
    const key=packet.id+'|'+packet.nonce;
    const now=Date.now();
    for(const [k,until] of seen)if(until<now)seen.delete(k);
+   // Background WebView timers can pause for minutes; never rely only on
+   // setTimeout to release a failed connection attempt.
+   if(connecting&&now-connectingSince>9000&&!window.FileportConnection?.connected){connecting=false;pendingPeerId=null;}
    if(seen.has(key)||connecting||window.FileportConnection?.connected||request)return;
    seen.set(key,now+35000);
    request={...packet,address};
@@ -48,10 +51,10 @@
  }
  function beginConnect(){
   if(!request)return;
-  connecting=true;const target=request;pendingPeerId=target.id;
+  connecting=true;connectingSince=Date.now();const target=request;pendingPeerId=target.id;
   close();
   window.FileportConnection?.connectDevice({address:target.address,port:38477});
-  setTimeout(()=>{connecting=false;},6500);
+  setTimeout(()=>{if(Date.now()-connectingSince>=6500)connecting=false;},6500);
  }
  $('phoneRequestCancel').addEventListener('click',close);
  $('phoneRequestApprove').addEventListener('click',()=>{
@@ -60,9 +63,13 @@
   identity.setAutoAllowed(id,$('phoneAutoConnect').checked);
   beginConnect();
  });
- window.addEventListener('fileport-peer-connected',()=>{connecting=false;pendingPeerId=null;});
- window.addEventListener('fileport-peer-disconnected',()=>{connecting=false;pendingPeerId=null;});
- window.addEventListener('fileport-connection-error',()=>{connecting=false;pendingPeerId=null;});
+ window.addEventListener('fileport-peer-connected',()=>{connecting=false;pendingPeerId=null;seen.clear();});
+ window.addEventListener('fileport-peer-disconnected',()=>{connecting=false;pendingPeerId=null;seen.clear();});
+ window.addEventListener('fileport-connection-error',()=>{connecting=false;pendingPeerId=null;seen.clear();});
+ document.addEventListener('visibilitychange',()=>{
+  if(document.hidden)return;
+  if(connecting&&Date.now()-connectingSince>9000){connecting=false;pendingPeerId=null;}
+ });
  // Android native receives a UDP request; JavaScript verifies the identity signature
  // against the pinned pairing key before initiating encrypted FPTP over TCP.
  window.FileportLan={onRequest,advertise,expectedPeerId:()=>request?.id||pendingPeerId};
