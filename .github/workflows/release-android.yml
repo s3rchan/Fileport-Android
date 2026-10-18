@@ -63,6 +63,9 @@ jobs:
           python scripts/generate_brand_icons.py
           python scripts/install_brand_fonts.py
 
+      - name: Verify app build version consistency
+        run: python scripts/bump_version.py --check
+
       - name: Check JavaScript syntax
         shell: bash
         run: |

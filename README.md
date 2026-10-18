@@ -2,7 +2,7 @@
 
 **Fileport** enables direct file sharing and messaging between an Android phone and a Windows computer over the **same Wi-Fi or local area network (LAN)**.
 
-**Current Android version: v2.9.1** · **Windows app:** [Fileport PC](https://github.com/s3rchan/Fileport-PC)
+**Source version:** v3.0.1 (development; published Release version may differ) · **Windows app:** [Fileport PC](https://github.com/s3rchan/Fileport-PC)
 
 [**Download the Android APK — GitHub Releases**](https://github.com/s3rchan/Fileport-Android/releases/latest) · [**Download the Windows app**](https://github.com/s3rchan/Fileport-PC/releases/latest)
 
@@ -57,6 +57,8 @@ The updater checks the application package ID, version, and signing certificate 
 
 | Version | Main changes |
 | --- | --- |
+| **v3.0.1** | Consistent patch/minor version workflow for new builds; synchronized Gradle and About screen. |
+| **v3.0.0** | New Fileport identity, approved Newdesign branding, Settings and three-minute transfer-aware Android background service; improved LAN reconnect. |
 | **v2.9.1** | Removed the obsolete Android reconnect/manual IP dialog while retaining PC-initiated connections. |
 | **v2.9.0** | Added GitHub Releases update checks, APK download, and user-approved installation. |
 | **v2.8.0** | Standardized source file naming in English and introduced GitHub Actions APK builds. |
@@ -119,8 +121,17 @@ Approved design standards for upcoming app versions:
 | Font | **Open Sauce** |
 | Logo | **White anchor symbol and Fileport wordmark on blue** |
 
-> The updated brand identity will be applied to future versions. Documenting it here does not mean the current v2.9.1 APK already includes the new visuals.
+> The approved Newdesign identity is present in the current development source; download an official signed Release APK when available.
 
 ---
 
 **Fileport — direct file transfers and chat between Android and Windows.**
+
+
+## Version policy (starting with source v3.0.1)
+
+For a new ordinary app build increase the final number: `3.0.1 → 3.0.2`. For a larger new release increase the middle number and reset the final number: `3.0.2 → 3.1.0`. The first number is reserved for a platform-generation change.
+
+Run `python scripts/bump_version.py patch` or `python scripts/bump_version.py minor` **before committing a new app build**. This updates Gradle `versionName`, increases Android `versionCode` monotonically, updates the About screen and README. CI runs `python scripts/bump_version.py --check`. An unchanged CI rerun is the same software version, not a new product release.
+
+The Android `applicationId` remains `com.yakin.app` to support updates from existing installations; changing it is not part of visual branding.
