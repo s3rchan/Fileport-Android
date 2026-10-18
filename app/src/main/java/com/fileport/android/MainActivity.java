@@ -50,6 +50,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import android.os.ParcelFileDescriptor;
+import android.os.SystemClock;
 
 import java.nio.charset.StandardCharsets;
 import android.webkit.*;
@@ -155,7 +156,7 @@ public class MainActivity extends Activity {
  }
  @Override protected void onStop(){
    super.onStop();backgrounded=true;idleHandler.removeCallbacks(idleClose);
-   synchronized(transportLock){if(transportSocket!=null)try{transportSocket.setSoTimeout(210000);}catch(Exception ignored){}}
+   synchronized(transportLock){if(transportSocket!=null)try{transportSocket.setSoTimeout(30000);}catch(Exception ignored){}}
    // Fallback if Android denies foreground-service launch.
    if(!backgroundServiceRunning)idleHandler.postDelayed(idleClose,BACKGROUND_GRACE_MS);
  }
@@ -163,6 +164,10 @@ public class MainActivity extends Activity {
   super.onStart();backgrounded=false;idleHandler.removeCallbacks(idleClose);startLanPresence();
   stopService(new Intent(this,BackgroundConnectionService.class));backgroundServiceRunning=false;
   synchronized(transportLock){if(transportSocket!=null)try{transportSocket.setSoTimeout(16000);}catch(Exception ignored){}}
+  // Detect a half-open TCP channel left behind by background throttling.
+  // Do not interrupt a currently active upload/download.
+  recoverStaleTransportOnForeground();
+  idleHandler.postDelayed(this::recoverStaleTransportOnForeground,5000);
   // PC-led reconnection: replay the latest waiting request after foregrounding.
   // It still must pass the JavaScript ECDSA signature and freshness checks.
   String queued=pendingLanRequest;
@@ -172,6 +177,19 @@ public class MainActivity extends Activity {
   }
  }
 
+ private void recoverStaleTransportOnForeground(){
+   if(backgrounded||transferActive)return;
+   boolean stale=false;
+   synchronized(transportLock){
+     stale=transportSocket!=null && lastTransportFrameAt>0 &&
+       SystemClock.elapsedRealtime()-lastTransportFrameAt>18000;
+   }
+   if(stale){
+     android.util.Log.i("FileportLan","Closing stale session on foreground return");
+     closeTransport();
+     transportEvent("onClosed","");
+   }
+ }
  private FrameLayout rootContainer;
  private static final int LIGHT_BAR = Color.rgb(245,247,251);
  private static final int DARK_BAR = Color.rgb(16,23,34);
@@ -329,7 +347,8 @@ public class MainActivity extends Activity {
      boolean connectedNow;
      synchronized(transportLock){connectedNow=transportSocket!=null;}
      // No need to repeatedly advertise while a TCP session is already active.
-     if(!connectedNow && id.matches("[a-f0-9]{64}")){
+     // Foreground discovery stays visible even if a previous socket is half-open.
+     if((!connectedNow || !backgrounded) && id.matches("[a-f0-9]{64}")){
       String payload="FILEPORT_PHONE_V1|"+id+"|"+lanName;
       byte[] bytes=payload.getBytes(StandardCharsets.UTF_8);
       DatagramPacket p=new DatagramPacket(bytes,bytes.length,InetAddress.getByName("255.255.255.255"),38478);
@@ -370,6 +389,8 @@ public class MainActivity extends Activity {
  private Socket transportSocket;
  private DataOutputStream transportWriter;
  private volatile int transportGeneration=0;
+ // Native receive timing detects half-open sockets even when the WebView is throttled.
+ private volatile long lastTransportFrameAt=0;
  private void transportEvent(String action,String value){
    String js="window.FileportTransport && FileportTransport."+action+"("+JSONObject.quote(value)+")";
    runOnUiThread(()->{if(web!=null)web.evaluateJavascript(js,null);});
@@ -388,9 +409,9 @@ public class MainActivity extends Activity {
     InetAddress target=InetAddress.getByName(address);
     if(!(target.isSiteLocalAddress()||target.isLinkLocalAddress())){transportEvent("onError","Not a local network address");return;}
     Socket socket=new Socket();socket.connect(new java.net.InetSocketAddress(target,port),4000);
-    socket.setSoTimeout(backgrounded?210000:16000);socket.setTcpNoDelay(true);
+    socket.setSoTimeout(backgrounded?30000:16000);socket.setTcpNoDelay(true);
     synchronized(transportLock){if(generation!=transportGeneration){socket.close();return;}
-     transportSocket=socket;transportWriter=new DataOutputStream(socket.getOutputStream());}
+     transportSocket=socket;transportWriter=new DataOutputStream(socket.getOutputStream());lastTransportFrameAt=SystemClock.elapsedRealtime();}
     transportEvent("onOpen","");
     new Thread(()->{
      final byte[] keepalive="{\"v\":1,\"t\":\"keepalive\"}".getBytes(StandardCharsets.UTF_8);
@@ -407,6 +428,7 @@ public class MainActivity extends Activity {
     while(generation==transportGeneration&&!socket.isClosed()){
      int size=input.readInt();if(size<1||size>196608)throw new java.io.IOException("Invalid frame length");
      byte[] data=new byte[size];input.readFully(data);
+     lastTransportFrameAt=SystemClock.elapsedRealtime();
      transportEvent("onFrame",new String(data,StandardCharsets.UTF_8));
     }
    }catch(Exception ex){if(generation==transportGeneration)transportEvent("onError","FPTP transport: "+ex.getClass().getSimpleName());}
