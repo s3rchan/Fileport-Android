@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.os.SystemClock;
 
 /**
@@ -30,6 +31,24 @@ public final class BackgroundConnectionService extends Service {
   private boolean transferActive;
   private long idleDeadline;
   private boolean inForeground;
+  private PowerManager.WakeLock transferWakeLock;
+  private final Runnable refreshTransferWakeLock = new Runnable() {
+    @Override public void run() {
+      if (!transferActive || transferWakeLock == null) return;
+      transferWakeLock.acquire(15 * 60_000L);
+      handler.postDelayed(this, 10 * 60_000L);
+    }
+  };
+  private void manageTransferWakeLock() {
+    handler.removeCallbacks(refreshTransferWakeLock);
+    if (transferWakeLock == null) return;
+    if (transferActive) {
+      transferWakeLock.acquire(15 * 60_000L);
+      handler.postDelayed(refreshTransferWakeLock,10 * 60_000L);
+    } else if (transferWakeLock.isHeld()) {
+      transferWakeLock.release();
+    }
+  }
   private final Runnable expire = new Runnable() {
     @Override public void run() {
       if (transferActive) return;
@@ -46,6 +65,8 @@ public final class BackgroundConnectionService extends Service {
 
   @Override public void onCreate() {
     super.onCreate();
+    PowerManager pm=(PowerManager)getSystemService(POWER_SERVICE);
+    if(pm!=null){transferWakeLock=pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"Fileport:ActiveFileTransfer");transferWakeLock.setReferenceCounted(false);}
     NotificationManager nm = getSystemService(NotificationManager.class);
     if (nm != null && Build.VERSION.SDK_INT >= 26) {
       NotificationChannel channel = new NotificationChannel(CHANNEL,
@@ -64,6 +85,7 @@ public final class BackgroundConnectionService extends Service {
       return START_NOT_STICKY;
     }
     transferActive = intent.getBooleanExtra(EXTRA_ACTIVE, transferActive);
+    manageTransferWakeLock();
     if (!inForeground) {
       Intent open = new Intent(this, MainActivity.class);
       open.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -82,6 +104,16 @@ public final class BackgroundConnectionService extends Service {
         startForeground(NOTIFICATION_ID, notification);
       }
       inForeground = true;
+    }
+    if(inForeground && ACTION_TRANSFER.equals(action)){
+      NotificationManager nm=getSystemService(NotificationManager.class);
+      if(nm!=null){Notification notify=new Notification.Builder(this,CHANNEL)
+        .setSmallIcon(android.R.drawable.stat_sys_upload)
+        .setContentTitle("Fileport")
+        .setContentText(transferActive?"File transfer in progress":"Background connection: up to 3 minutes remaining")
+        .setOngoing(true).build();
+        nm.notify(NOTIFICATION_ID,notify);
+      }
     }
     handler.removeCallbacks(expire);
     if (transferActive) {
@@ -102,6 +134,8 @@ public final class BackgroundConnectionService extends Service {
   }
   @Override public void onDestroy() {
     handler.removeCallbacks(expire);
+    handler.removeCallbacks(refreshTransferWakeLock);
+    if(transferWakeLock!=null&&transferWakeLock.isHeld())transferWakeLock.release();
     super.onDestroy();
   }
   @Override public IBinder onBind(Intent intent) {return null;}
