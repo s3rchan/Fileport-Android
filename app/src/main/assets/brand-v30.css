@@ -68,3 +68,15 @@ body,button,input,select{font-family:"Open Sauce Sans",system-ui,-apple-system,"
 
 /* Apply the official typeface even where older components specify a font shorthand. */
 .shell,.shell button,.shell input,.shell select,.shell h1,.shell h2,.shell h3,.flow-first-setup,.secure-pair-overlay{font-family:"Open Sauce Sans",system-ui,-apple-system,"Segoe UI",sans-serif!important}
+
+/* Newdesign artwork placement only. Existing official color tokens are unchanged. */
+.mobile-brand .fileport-new-wordmark{width:min(174px,58vw);height:46px;object-fit:contain;object-position:left center}
+.mobile-brand .logo-night{display:none}
+:root[data-theme="dark"] .mobile-brand .logo-day{display:none}
+:root[data-theme="dark"] .mobile-brand .logo-night{display:block}
+.flow-first-setup .flow-setup-logo{width:min(215px,75vw);height:78px;max-height:78px;object-fit:contain;filter:none!important}
+.about-heading img{max-width:70px;max-height:70px;object-fit:contain}
+@media(prefers-color-scheme:dark){
+ :root[data-theme="system"] .mobile-brand .logo-day{display:none}
+ :root[data-theme="system"] .mobile-brand .logo-night{display:block}
+}
