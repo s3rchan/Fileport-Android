@@ -692,7 +692,8 @@ public class MainActivity extends Activity {
    }
    return true;
   }
-  @JavascriptInterface public boolean scheduleMusic(String id,int delayMs){
+  @JavascriptInterface public boolean scheduleMusic(String id,int delayMs){return scheduleMusicAt(id,delayMs,0);}
+  @JavascriptInterface public boolean scheduleMusicAt(String id,int delayMs,int positionMs){
    if(delayMs<0||delayMs>5000||id==null)return false;
    synchronized(musicLock){
     if(!id.equals(preparedMusicId)||musicPlayer==null)return false;
@@ -703,7 +704,7 @@ public class MainActivity extends Activity {
        if(musicPlayer!=selected||!id.equals(preparedMusicId))return;
        try{
         if(selected.isPlaying())selected.pause();
-        selected.seekTo(0);selected.start();
+        selected.seekTo(Math.min(Math.max(0,positionMs),Math.max(0,selected.getDuration())));selected.start();
        }catch(Exception error){android.util.Log.w("FileportMusic","Music playback failed",error);}
        musicStartTask=null;
       }
@@ -712,6 +713,7 @@ public class MainActivity extends Activity {
    }
    return true;
   }
+  @JavascriptInterface public void pauseMusic(){synchronized(musicLock){if(musicStartTask!=null)musicHandler.removeCallbacks(musicStartTask);musicStartTask=null;if(musicPlayer!=null)try{musicPlayer.pause();}catch(Exception ignored){}}}
   @JavascriptInterface public void stopMusic(){stopNativeMusic();}
   @JavascriptInterface public synchronized void finishDownload(String id){
    Uri uri=uris.get(id);
