@@ -27,7 +27,7 @@ import java.util.HashSet;
  * before handing the file to the system installer for user approval.
  */
 final class GithubUpdater {
- private static final String API="https://api.github.com/repos/s3rchan/Fileport-Android-2.8/releases/latest";
+ private static final String API="https://api.github.com/repos/s3rchan/Fileport-Android/releases/latest";
  private static final long MAX_APK=300L*1024*1024;
  private final MainActivity activity;
  private final WebView web;
