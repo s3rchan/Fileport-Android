@@ -70,6 +70,30 @@ public class MainActivity extends Activity {
  private volatile long pendingLanAt=0;
  private static final long BACKGROUND_GRACE_MS=180000L;
  private volatile boolean transferActive=false;
+ private volatile boolean backgroundServiceRunning=false;
+ private void setBackgroundService(String action,boolean active) {
+   Intent intent=new Intent(this,BackgroundConnectionService.class).setAction(action);
+   intent.putExtra(BackgroundConnectionService.EXTRA_ACTIVE,active);
+   try {
+     if (BackgroundConnectionService.ACTION_START.equals(action) && Build.VERSION.SDK_INT>=26)
+       startForegroundService(intent);
+     else startService(intent);
+     if (BackgroundConnectionService.ACTION_START.equals(action)) backgroundServiceRunning=true;
+   } catch (RuntimeException error) {
+     if (BackgroundConnectionService.ACTION_START.equals(action)) backgroundServiceRunning=false;
+     android.util.Log.w("FileportBackground","Foreground connection unavailable; using idle fallback",error);
+   }
+ }
+ public static void expireBackgroundSession(){
+   MainActivity a=activeActivity;
+   if(a==null)return;
+   a.runOnUiThread(()->{
+     if(!a.backgrounded||a.transferActive)return;
+     a.backgroundServiceRunning=false;
+     if(a.web!=null)a.web.evaluateJavascript("window.FileportDisconnectIfIdle && window.FileportDisconnectIfIdle()",null);
+     a.closeTransport();a.stopLanPresence();a.hideConnectedNotification();
+   });
+ }
  private final Handler idleHandler=new Handler(Looper.getMainLooper());
  private final Runnable idleClose=new Runnable(){@Override public void run(){
    if(!backgrounded)return;
@@ -85,7 +109,7 @@ public class MainActivity extends Activity {
    if(intent==null||!DISCONNECT_ACTION.equals(intent.getAction()))return;
    MainActivity activity=activeActivity;
    if(activity!=null){activity.runOnUiThread(()->{
-    activity.closeTransport();activity.hideConnectedNotification();
+    activity.closeTransport();activity.hideConnectedNotification();activity.stopService(new Intent(activity,BackgroundConnectionService.class));
     if(activity.web!=null)activity.web.evaluateJavascript(
      "window.FileportConnection && FileportConnection.disconnect()",null);
    });}
@@ -124,9 +148,21 @@ public class MainActivity extends Activity {
    b.setSmallIcon(android.R.drawable.stat_sys_download_done).setContentTitle("Fileport").setContentText("File received: "+filename).setContentIntent(pi).setAutoCancel(true);
    nm.notify(207,b.build());
  }
- @Override protected void onStop(){super.onStop();backgrounded=true;idleHandler.removeCallbacks(idleClose);idleHandler.postDelayed(idleClose,BACKGROUND_GRACE_MS);}
+ @Override protected void onPause(){
+   // Start while Activity is still eligible to launch a foreground service.
+   if(!isFinishing())setBackgroundService(BackgroundConnectionService.ACTION_START,transferActive);
+   super.onPause();
+ }
+ @Override protected void onStop(){
+   super.onStop();backgrounded=true;idleHandler.removeCallbacks(idleClose);
+   synchronized(transportLock){if(transportSocket!=null)try{transportSocket.setSoTimeout(210000);}catch(Exception ignored){}}
+   // Fallback if Android denies foreground-service launch.
+   if(!backgroundServiceRunning)idleHandler.postDelayed(idleClose,BACKGROUND_GRACE_MS);
+ }
  @Override protected void onStart(){
   super.onStart();backgrounded=false;idleHandler.removeCallbacks(idleClose);startLanPresence();
+  stopService(new Intent(this,BackgroundConnectionService.class));backgroundServiceRunning=false;
+  synchronized(transportLock){if(transportSocket!=null)try{transportSocket.setSoTimeout(16000);}catch(Exception ignored){}}
   // PC-led reconnection: replay the latest waiting request after foregrounding.
   // It still must pass the JavaScript ECDSA signature and freshness checks.
   String queued=pendingLanRequest;
@@ -260,7 +296,7 @@ public class MainActivity extends Activity {
   super.onRequestPermissionsResult(code,permissions,grants);
  }
  @Override protected void onDestroy(){
-   stopLanPresence();closeTransport();hideConnectedNotification();if(activeActivity==this)activeActivity=null;
+   stopLanPresence();closeTransport();hideConnectedNotification();stopService(new Intent(this,BackgroundConnectionService.class));if(activeActivity==this)activeActivity=null;
    synchronized(bridge){for(String id:new ArrayList<>(downloads.keySet()))bridge.pauseDownload(id);}
    idleHandler.removeCallbacks(idleClose);
    super.onDestroy();
@@ -349,7 +385,7 @@ public class MainActivity extends Activity {
     InetAddress target=InetAddress.getByName(address);
     if(!(target.isSiteLocalAddress()||target.isLinkLocalAddress())){transportEvent("onError","Not a local network address");return;}
     Socket socket=new Socket();socket.connect(new java.net.InetSocketAddress(target,port),4000);
-    socket.setSoTimeout(16000);socket.setTcpNoDelay(true);
+    socket.setSoTimeout(backgrounded?210000:16000);socket.setTcpNoDelay(true);
     synchronized(transportLock){if(generation!=transportGeneration){socket.close();return;}
      transportSocket=socket;transportWriter=new DataOutputStream(socket.getOutputStream());}
     transportEvent("onOpen","");
@@ -459,7 +495,19 @@ public class MainActivity extends Activity {
   }
   @JavascriptInterface public void disconnectTransport(){closeTransport();}
 
-  @JavascriptInterface public void setTransferActive(boolean active){transferActive=active;}
+  @JavascriptInterface public void setTransferActive(boolean active){
+    if(transferActive==active)return;
+    transferActive=active;
+    runOnUiThread(()->{
+      if(!backgrounded)return;
+      if(backgroundServiceRunning){
+        setBackgroundService(BackgroundConnectionService.ACTION_TRANSFER,active);
+      }else{
+        idleHandler.removeCallbacks(idleClose);
+        if(!active)idleHandler.postDelayed(idleClose,BACKGROUND_GRACE_MS);
+      }
+    });
+  }
 
   @JavascriptInterface public void setTheme(String mode) {
     if (!"dark".equals(mode) && !"light".equals(mode)) mode = "system";
