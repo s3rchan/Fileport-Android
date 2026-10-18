@@ -156,7 +156,7 @@ public class MainActivity extends Activity {
  }
  @Override protected void onStop(){
    super.onStop();backgrounded=true;idleHandler.removeCallbacks(idleClose);
-   synchronized(transportLock){if(transportSocket!=null)try{transportSocket.setSoTimeout(30000);}catch(Exception ignored){}}
+   synchronized(transportLock){if(transportSocket!=null)try{transportSocket.setSoTimeout(transferActive?210000:30000);}catch(Exception ignored){}}
    // Fallback if Android denies foreground-service launch.
    if(!backgroundServiceRunning)idleHandler.postDelayed(idleClose,BACKGROUND_GRACE_MS);
  }
@@ -409,7 +409,7 @@ public class MainActivity extends Activity {
     InetAddress target=InetAddress.getByName(address);
     if(!(target.isSiteLocalAddress()||target.isLinkLocalAddress())){transportEvent("onError","Not a local network address");return;}
     Socket socket=new Socket();socket.connect(new java.net.InetSocketAddress(target,port),4000);
-    socket.setSoTimeout(backgrounded?30000:16000);socket.setTcpNoDelay(true);
+    socket.setSoTimeout(backgrounded?(transferActive?210000:30000):16000);socket.setTcpNoDelay(true);
     synchronized(transportLock){if(generation!=transportGeneration){socket.close();return;}
      transportSocket=socket;transportWriter=new DataOutputStream(socket.getOutputStream());lastTransportFrameAt=SystemClock.elapsedRealtime();}
     transportEvent("onOpen","");
@@ -525,6 +525,9 @@ public class MainActivity extends Activity {
     transferActive=active;
     runOnUiThread(()->{
       if(!backgrounded)return;
+      synchronized(transportLock){
+        if(transportSocket!=null)try{transportSocket.setSoTimeout(active?210000:30000);}catch(Exception ignored){}
+      }
       if(backgroundServiceRunning){
         setBackgroundService(BackgroundConnectionService.ACTION_TRANSFER,active);
       }else{
