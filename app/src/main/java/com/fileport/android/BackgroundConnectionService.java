@@ -107,7 +107,11 @@ public final class BackgroundConnectionService extends Service {
     }
     if(inForeground && ACTION_TRANSFER.equals(action)){
       NotificationManager nm=getSystemService(NotificationManager.class);
-      if(nm!=null){Notification notify=new Notification.Builder(this,CHANNEL)
+      if(nm!=null){
+        Intent openApp=new Intent(this,MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent tap=PendingIntent.getActivity(this,310,openApp,PendingIntent.FLAG_IMMUTABLE|PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification notify=new Notification.Builder(this,CHANNEL)
+        .setContentIntent(tap)
         .setSmallIcon(android.R.drawable.stat_sys_upload)
         .setContentTitle("Fileport")
         .setContentText(transferActive?"File transfer in progress":"Background connection: up to 3 minutes remaining")
