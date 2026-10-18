@@ -30,6 +30,8 @@ import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.media.MediaPlayer;
+import android.media.AudioAttributes;
 
 
 import org.json.JSONObject;
@@ -314,7 +316,7 @@ public class MainActivity extends Activity {
   super.onRequestPermissionsResult(code,permissions,grants);
  }
  @Override protected void onDestroy(){
-   stopLanPresence();closeTransport();hideConnectedNotification();stopService(new Intent(this,BackgroundConnectionService.class));if(activeActivity==this)activeActivity=null;
+   releaseNativeMusic();stopLanPresence();closeTransport();hideConnectedNotification();stopService(new Intent(this,BackgroundConnectionService.class));if(activeActivity==this)activeActivity=null;
    synchronized(bridge){for(String id:new ArrayList<>(downloads.keySet()))bridge.pauseDownload(id);}
    idleHandler.removeCallbacks(idleClose);
    super.onDestroy();
@@ -485,6 +487,29 @@ public class MainActivity extends Activity {
    finally{if(temp!=null)temp.delete();}
   }).start();
  }
+ private final Object musicLock=new Object();
+ private final Handler musicHandler=new Handler(Looper.getMainLooper());
+ private MediaPlayer musicPlayer;
+ private Runnable musicStartTask;
+ private String preparedMusicId;
+ private String finishedMusicId;
+ private Uri finishedMusicUri;
+ private void stopNativeMusic(){
+  synchronized(musicLock){
+   if(musicStartTask!=null){musicHandler.removeCallbacks(musicStartTask);musicStartTask=null;}
+   if(musicPlayer!=null){
+    try{if(musicPlayer.isPlaying())musicPlayer.pause();musicPlayer.seekTo(0);}
+    catch(Exception ignored){}
+   }
+  }
+ }
+ private void releaseNativeMusic(){
+  synchronized(musicLock){
+   if(musicStartTask!=null){musicHandler.removeCallbacks(musicStartTask);musicStartTask=null;}
+   if(musicPlayer!=null){try{musicPlayer.release();}catch(Exception ignored){}musicPlayer=null;}
+   preparedMusicId=null;finishedMusicId=null;finishedMusicUri=null;
+  }
+ }
  class Bridge {
   @JavascriptInterface public void selectUpdateApk(){selectLocalUpdate();}
   @JavascriptInterface public void checkGithubUpdate(){if(githubUpdater!=null)githubUpdater.check();}
@@ -637,6 +662,57 @@ public class MainActivity extends Activity {
    if(uri!=null)try{getContentResolver().delete(uri,null,null);}catch(Exception ignored){}
    getPreferences(MODE_PRIVATE).edit().remove(metaKey(id)).apply();
   }
+  @JavascriptInterface public synchronized void finishMusicDownload(String id){
+   Uri received=uris.get(id);
+   if(received==null||id==null||!id.matches("[a-f0-9]{32}"))throw new RuntimeException("Unknown music transfer");
+   finishDownload(id);
+   synchronized(musicLock){finishedMusicId=id;finishedMusicUri=received;}
+  }
+  @JavascriptInterface public boolean prepareMusic(String id){
+   if(id==null)return false;
+   Uri uri;
+   synchronized(musicLock){
+    if(!id.equals(finishedMusicId)||finishedMusicUri==null)return false;
+    uri=finishedMusicUri;
+   }
+   MediaPlayer next=new MediaPlayer();
+   try{
+    next.setAudioAttributes(new AudioAttributes.Builder()
+     .setUsage(AudioAttributes.USAGE_MEDIA)
+     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build());
+    next.setDataSource(MainActivity.this,uri);
+    next.prepare();
+   }catch(Exception error){
+    android.util.Log.w("FileportMusic","Could not prepare verified music file",error);
+    next.release();return false;
+   }
+   synchronized(musicLock){
+    if(musicPlayer!=null){try{musicPlayer.release();}catch(Exception ignored){}}
+    musicPlayer=next;preparedMusicId=id;
+   }
+   return true;
+  }
+  @JavascriptInterface public boolean scheduleMusic(String id,int delayMs){
+   if(delayMs<0||delayMs>5000||id==null)return false;
+   synchronized(musicLock){
+    if(!id.equals(preparedMusicId)||musicPlayer==null)return false;
+    if(musicStartTask!=null)musicHandler.removeCallbacks(musicStartTask);
+    final MediaPlayer selected=musicPlayer;
+    musicStartTask=()->{
+      synchronized(musicLock){
+       if(musicPlayer!=selected||!id.equals(preparedMusicId))return;
+       try{
+        if(selected.isPlaying())selected.pause();
+        selected.seekTo(0);selected.start();
+       }catch(Exception error){android.util.Log.w("FileportMusic","Music playback failed",error);}
+       musicStartTask=null;
+      }
+    };
+    musicHandler.postDelayed(musicStartTask,delayMs);
+   }
+   return true;
+  }
+  @JavascriptInterface public void stopMusic(){stopNativeMusic();}
   @JavascriptInterface public synchronized void finishDownload(String id){
    Uri uri=uris.get(id);
    try{
