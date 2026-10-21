@@ -141,3 +141,10 @@ The Android `applicationId` remains `com.yakin.app` to support updates from exis
 ## In-app update signing
 
 Official Fileport APK releases are signed with the protected release key. Android cannot replace an installation signed by a different certificate, including a debug build, and the application must not bypass this OS security check. To keep automatic updates working, use the official signed release for all subsequent versions. If an earlier installed app used a different key, export/back up anything important and perform a one-time reinstall, then pair devices again.
+
+## Release notes — v3.0.5
+
+- Preserve local text messages and completed file-transfer bubbles across app restarts.
+- Reuse paused transfer bubbles when transfers resume after network interruptions.
+- Keep Android package ID `com.yakin.app` unchanged and increment `versionCode` to 36 for upgrade compatibility.
+- Release APK must be signed with the existing production signing key; verify in-place update on a device before replacing an installed release.
