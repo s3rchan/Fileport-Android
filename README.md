@@ -2,7 +2,7 @@
 
 **Fileport** enables direct file sharing and messaging between an Android phone and a Windows computer over the **same Wi-Fi or local area network (LAN)**.
 
-**Source version:** v3.0.4 (development; published Release version may differ) · **Windows app:** [Fileport PC](https://github.com/s3rchan/Fileport-PC)
+**Source version:** v3.0.5 (development; published Release version may differ) · **Windows app:** [Fileport PC](https://github.com/s3rchan/Fileport-PC)
 
 [**Download the Android APK — GitHub Releases**](https://github.com/s3rchan/Fileport-Android/releases/latest) · [**Download the Windows app**](https://github.com/s3rchan/Fileport-PC/releases/latest)
 
