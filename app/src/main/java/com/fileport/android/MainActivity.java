@@ -292,9 +292,6 @@ public class MainActivity extends Activity {
  }
  @Override protected void onActivityResult(int request,int result,Intent data) {
   super.onActivityResult(request,result,data);
-  if(request==441 && result==RESULT_OK && data!=null && data.getData()!=null) {
-   verifyAndInstallUpdate(data.getData());return;
-  }
   if(request==201) {
    // The hosted file upload feature has been removed.
    return;
