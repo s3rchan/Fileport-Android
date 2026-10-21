@@ -2,7 +2,7 @@
 
 **Fileport** enables direct file sharing and messaging between an Android phone and a Windows computer over the **same Wi-Fi or local area network (LAN)**.
 
-**Source version:** v3.0.5 (development; published Release version may differ) · **Windows app:** [Fileport PC](https://github.com/s3rchan/Fileport-PC)
+**Source version:** v4.0.0 (development; published Release version may differ) · **Windows app:** [Fileport PC](https://github.com/s3rchan/Fileport-PC)
 
 [**Download the Android APK — GitHub Releases**](https://github.com/s3rchan/Fileport-Android/releases/latest) · [**Download the Windows app**](https://github.com/s3rchan/Fileport-PC/releases/latest)
 
@@ -148,3 +148,7 @@ Official Fileport APK releases are signed with the protected release key. Androi
 - Reuse paused transfer bubbles when transfers resume after network interruptions.
 - Keep Android package ID `com.yakin.app` unchanged and increment `versionCode` to 36 for upgrade compatibility.
 - Release APK must be signed with the existing production signing key; verify in-place update on a device before replacing an installed release.
+
+## Final release
+
+Fileport Android v4.0.0 (versionCode 37) is the final planned release. In-app GitHub and local APK update controls have been removed. LAN transfers and chat do not require update checks.
