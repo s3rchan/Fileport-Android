@@ -229,7 +229,6 @@ public class MainActivity extends Activity {
  private static final long MAX_RECEIVE_BYTES=1024L*1024*1024;
  private static final int MAX_CHUNK_BYTES=65536;
  private final Bridge bridge=new Bridge();
- private GithubUpdater githubUpdater;
  @Override public void onCreate(Bundle b) {
   super.onCreate(b);
   web = new WebView(this);
@@ -287,16 +286,12 @@ public class MainActivity extends Activity {
     catch(Exception e){pending.onReceiveValue(null);pending=null;return false;}
    }
   });
-  githubUpdater=new GithubUpdater(this,web);
   web.addJavascriptInterface(bridge,"FileportNative");
   web.loadUrl("https://appassets.androidplatform.net/assets/index.html");
   activeActivity=this;startLanPresence();requestDiscoveryPermissions();
  }
  @Override protected void onActivityResult(int request,int result,Intent data) {
   super.onActivityResult(request,result,data);
-  if(request==441 && result==RESULT_OK && data!=null && data.getData()!=null) {
-   verifyAndInstallUpdate(data.getData());return;
-  }
   if(request==201) {
    // The hosted file upload feature has been removed.
    return;
@@ -438,58 +433,7 @@ public class MainActivity extends Activity {
    }}}
   },"fileport-fptp-transport").start();
  }
- private void updateStatus(String message){
-  runOnUiThread(()->web.evaluateJavascript("window.fileportUpdateStatus("+JSONObject.quote(message)+")",null));
- }
- private void selectLocalUpdate(){runOnUiThread(()->{
-  try{Intent pick=new Intent(Intent.ACTION_OPEN_DOCUMENT);
-   pick.addCategory(Intent.CATEGORY_OPENABLE);pick.setType("application/vnd.android.package-archive");
-   pick.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);startActivityForResult(pick,441);
-  }catch(Exception e){updateStatus("Cannot open APK picker: "+e.getMessage());}
- });}
- private void verifyAndInstallUpdate(Uri uri){
-  new Thread(()->{
-   java.io.File temp=null;
-   try{
-    temp=new java.io.File(getCacheDir(),"fileport-selected-update.apk");
-    try(InputStream in=getContentResolver().openInputStream(uri);FileOutputStream out=new FileOutputStream(temp)){
-     if(in==null)throw new Exception("Cannot read APK");byte[] buffer=new byte[65536];int n;long total=0;
-     while((n=in.read(buffer))!=-1){total+=n;if(total>300L*1024*1024)throw new Exception("APK exceeds 300 MB");out.write(buffer,0,n);}
-    }
-    int flags=Build.VERSION.SDK_INT>=28?PackageManager.GET_SIGNING_CERTIFICATES:PackageManager.GET_SIGNATURES;
-    PackageInfo apk=getPackageManager().getPackageArchiveInfo(temp.getAbsolutePath(),flags);
-    PackageInfo installed=getPackageManager().getPackageInfo(getPackageName(),flags);
-    if(apk==null||!getPackageName().equals(apk.packageName))throw new Exception("Not a Fileport APK");
-    long next=Build.VERSION.SDK_INT>=28?apk.getLongVersionCode():apk.versionCode;
-    long old=Build.VERSION.SDK_INT>=28?installed.getLongVersionCode():installed.versionCode;
-    if(next<=old)throw new Exception("Select a newer Fileport version");
-    Signature[] incoming=Build.VERSION.SDK_INT>=28?apk.signingInfo.getApkContentsSigners():apk.signatures;
-    Signature[] current=Build.VERSION.SDK_INT>=28?installed.signingInfo.getApkContentsSigners():installed.signatures;
-    if(incoming==null||current==null||incoming.length!=current.length||incoming.length==0)throw new Exception("APK signature mismatch");
-    java.util.HashSet<String> known=new java.util.HashSet<>();for(Signature sig:current)known.add(sig.toCharsString());
-    for(Signature sig:incoming)if(!known.contains(sig.toCharsString()))throw new Exception("APK signature mismatch");
-    updateStatus("APK verified. Android will request installation approval.");
-    // Use original document URI so the system package installer can read it.
-    runOnUiThread(()->{
-     try{
-      if(Build.VERSION.SDK_INT>=26&&!getPackageManager().canRequestPackageInstalls()){
-       updateStatus("Allow Fileport to install apps, then select the APK again.");
-       Intent settings=new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,Uri.parse("package:"+getPackageName()));startActivity(settings);return;
-      }
-      Intent install=new Intent(Intent.ACTION_VIEW);
-      install.setDataAndType(uri,"application/vnd.android.package-archive");
-      install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);startActivity(install);
-     }catch(Exception e){updateStatus("Installer error: "+e.getMessage());}
-    });
-   }catch(Exception e){updateStatus("Update rejected: "+e.getMessage());}
-   finally{if(temp!=null)temp.delete();}
-  }).start();
- }
  class Bridge {
-  @JavascriptInterface public void selectUpdateApk(){selectLocalUpdate();}
-  @JavascriptInterface public void checkGithubUpdate(){if(githubUpdater!=null)githubUpdater.check();}
-  @JavascriptInterface public void downloadGithubUpdate(){if(githubUpdater!=null)githubUpdater.download();}
-  @JavascriptInterface public void installGithubUpdate(){if(githubUpdater!=null)githubUpdater.install();}
   @JavascriptInterface public String getDeviceName(){
    String name=null;
    try{name=Settings.Global.getString(getContentResolver(),"device_name");}catch(Exception ignored){}

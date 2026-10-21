@@ -8,7 +8,7 @@ for(const p of ['app/src/main/assets/index.html','app/src/main/assets/i18n.js','
 }
 assert.doesNotMatch(read('app/src/main/assets/app.js'),/FileportMusicTransport|sendMusic\(/);
 assert.match(read('app/src/main/assets/app.js'),/Unsupported file metadata/);
-assert.match(read('app/build.gradle'),/versionCode 36; versionName '3.0.5'/);
-assert.match(read('app/src/main/java/com/fileport/android/GithubUpdater.java'),/getApkContentsSigners/);
-assert.match(read('README.md'),/Source version:\*\* v3\.0\.5/);
+assert.match(read('app/build.gradle'),/versionCode 37; versionName '4.0.0'/);
+assert.doesNotMatch(read('app/src/main/java/com/fileport/android/MainActivity.java'),/GithubUpdater|selectUpdateApk|checkGithubUpdate/);
+assert.match(read('README.md'),/Source version:\*\* v4\.0\.0/);
 console.log('File-only Android regression checks passed');
